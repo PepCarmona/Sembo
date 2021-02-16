@@ -1,0 +1,12 @@
+{
+  "name": "sembo",
+  "version": "1.0.0",
+  "description": "Sembo Hotels Test API",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": "github:PepCarmona/Sembo",
+  "author": "Pep Carmona Coll",
+  "license": "MIT"
+}
