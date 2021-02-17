@@ -8,5 +8,8 @@
   },
   "repository": "github:PepCarmona/Sembo",
   "author": "Pep Carmona Coll",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
 }
