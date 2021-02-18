@@ -2,11 +2,11 @@
 
 const https = require('https');
 
-    // The program takes previously validated 'iso' and retrieves data from the backend API
+    /*  the server takes previously validated 'iso' and retrieves data from the backend API  */
 function getHotels (iso) {
     return new Promise ((resolve, reject) => {
         https.get(`https://developers.sembo.com/sembo/hotels-test/countries/${iso}/hotels`, (res) => {
-            // if response is 'OK' the program proceeds with data retrieve and manipulation
+            /*  if response is 'OK' the program proceeds with data retrieve and manipulation  */
             if (res.statusCode === 200) {
                 let data = '';
                 res.on('data', (chunk) => {
@@ -18,7 +18,7 @@ function getHotels (iso) {
                         resolve(data);
                     }
                 });
-            // if response is not 'OK' prints error
+            /*  if response is not 'OK' prints error  */
             } else {
                 console.log(`Error ${res.statusCode}. Retrying...`);
                 resolve('API Error');
@@ -42,7 +42,7 @@ let getTop3 = function (hotels) {
                  .map(hotel => hotel.name);
 }
 
-    // Recursive loop through Promise to automatically re-fetch hotels data in case of API failure
+    /*  recursive loop through Promise to automatically re-fetch hotels data in case of API failure  */
 function getHotelStats(iso) {
     return getHotels(iso).then(function(resolve) {
         if (resolve === 'API Error') {

@@ -1,11 +1,10 @@
 /* ---------- UX INTERACTIONS ---------- */
 
-    /* --- Toggle Buttons --- */
+    /*  Toggle Buttons  */
 let buttons = document.querySelectorAll('.buttons button');
 buttons.forEach(button => {
     button.addEventListener('click', function (event) {
         toggleButtons(buttons, event.target);
-        fetchStats(event.target.dataset.iso);
     });
 });
 
@@ -24,7 +23,7 @@ function toggleButtons(buttons, target) {
     }
 }
 
-    /* --- Toggle Tooltip --- */
+    /*  Toggle Tooltip  */
 document.querySelector('.attributions').addEventListener('mouseenter', event => {
     event.target.children[0].classList.remove('hidden');
 });
@@ -35,6 +34,7 @@ document.querySelector('.attributions').addEventListener('mouseleave', event => 
 
 /* ---------- AJAX REQUEST ---------- */
 
+    /*  fetch stats by iso and return a Promise with the object  */
 function fetchStats(iso) {
     const url = new URL('http://localhost:2323/stats');
     url.search = new URLSearchParams({ iso: iso});
@@ -49,6 +49,7 @@ function fetchStats(iso) {
     });
 }
 
+    /*  fetch all stats in parallel  */
 async function fetchAllStats() {
     let statsEs = fetchStats('es');
     let statsIT = fetchStats('it');
@@ -60,6 +61,32 @@ async function fetchAllStats() {
     }
 }
 
+    /*  fetch all stats on page load and assign click handlers to switch between countries  */
 fetchAllStats().then(stats => {
-    console.log(stats.es.top3);
+    buttons.forEach(button => {
+        button.addEventListener('click', function(event) {
+            if (!document.querySelector('.display').classList.contains('slim')) {
+                displayStatsByIso(stats, event.target.dataset.iso)
+            } else {
+                window.setTimeout(function() {
+                    displayStatsByIso(stats, event.target.dataset.iso);
+                }, 500);
+            }
+        });
+    });
 });
+
+    /*  print fetched stats on html  */
+function displayStatsByIso(stats, iso) {
+    let average_div = document.querySelector('.display > .average > .body');
+    let top3_div = document.querySelector('.display > .top3 > .body');
+    let top3_span = document.querySelectorAll('.top3_span');
+    for (const key in stats) {
+        if (key === iso) {
+            average_div.innerHTML = stats[key].average;
+            top3_span.forEach((span, index) => {
+                span.innerHTML = stats[key].top3[index];
+            });
+        }
+    }
+}
