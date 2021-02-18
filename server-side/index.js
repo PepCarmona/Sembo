@@ -2,7 +2,7 @@
 
 const https = require('https');
 
-// The program takes previously validated 'iso' and retrieves data from the backend API
+    // The program takes previously validated 'iso' and retrieves data from the backend API
 function getHotels (iso) {
     return new Promise ((resolve, reject) => {
         https.get(`https://developers.sembo.com/sembo/hotels-test/countries/${iso}/hotels`, (res) => {
@@ -42,7 +42,7 @@ let getTop3 = function (hotels) {
                  .map(hotel => hotel.name);
 }
 
-// Recursive loop through Promise to automatically re-fetch hotels data in case of API failure
+    // Recursive loop through Promise to automatically re-fetch hotels data in case of API failure
 function getHotelStats(iso) {
     return getHotels(iso).then(function(resolve) {
         if (resolve === 'API Error') {
@@ -64,36 +64,20 @@ function getHotelStats(iso) {
 }
 
 
-/* ---------- SERVER SETUP ---------- */
-
-const http = require('http');
-const hostname = '127.0.0.1';
-const port = '2323';
-
-const server = http.createServer((req, res) => {
-    res.writeHead(200, {'Content-Type': 'text/html'});
-    res.end();
-});
-
-server.listen(port, hostname, () => {
-    console.log(`Server running at http://${hostname}:${port}/`);
-});
-
-
 /* ---------- ROUTING ---------- */
 
+const cors = require('cors');
 const express = require('express');
 const app = express();
 
-app.get('/', async (req, res) => {
+app.use(cors())
+
+app.get('/stats', async (req, res) => {
     let stats = await getHotelStats(req.query.iso);
     if (stats === 'ISO Error') res.send('No hotels exist for selected ISO');
     else res.send(stats);
 });
-app.get('/test', (req, res) => {
-    res.send('Test');
-});
 
-app.listen(2324, () => {
-    console.log('App listening on port 2324');
+app.listen(2323, () => {
+    console.log('App listening on port 2323');
 })
