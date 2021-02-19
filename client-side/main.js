@@ -34,12 +34,18 @@ document.querySelector('.attributions').addEventListener('mouseleave', event => 
 
 /* ---------- AJAX REQUEST ---------- */
 
+const mail = 'pep.carmona.coll@gmail.com';
+
     /*  fetch stats by iso and return a Promise with the object  */
 function fetchStats(iso) {
     const url = new URL('http://localhost:2323/stats');
     url.search = new URLSearchParams({ iso: iso});
     return new Promise(resolve => {
-        fetch(url)
+        fetch(url, {
+            headers: {
+                'X-Mail': mail
+            }
+        })
         .then(data => {
             data.text().then(text => {
                 resolve(JSON.parse(text));

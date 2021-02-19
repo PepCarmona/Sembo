@@ -6,11 +6,19 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "repository": "github:PepCarmona/Sembo",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PepCarmona/Sembo.git"
+  },
   "author": "Pep Carmona Coll",
   "license": "MIT",
   "dependencies": {
     "cors": "^2.8.5",
     "express": "^4.17.1"
-  }
+  },
+  "bugs": {
+    "url": "https://github.com/PepCarmona/Sembo/issues"
+  },
+  "homepage": "https://github.com/PepCarmona/Sembo#readme",
+  "devDependencies": {}
 }

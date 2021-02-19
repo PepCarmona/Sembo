@@ -3,9 +3,17 @@
 const https = require('https');
 
     /*  the server takes previously validated 'iso' and retrieves data from the backend API  */
-function getHotels (iso) {
+function getHotels (iso, header) {
+    const options = {
+        host: 'developers.sembo.com',
+        path: `/sembo/hotels-test/countries/${iso}/hotels`,
+        protocol: 'https:',
+        headers: {
+            'X-API-Key': header
+        }
+    }
     return new Promise ((resolve, reject) => {
-        https.get(`https://developers.sembo.com/sembo/hotels-test/countries/${iso}/hotels`, (res) => {
+        https.get(options, (res) => {
             /*  if response is 'OK' the program proceeds with data retrieve and manipulation  */
             if (res.statusCode === 200) {
                 let data = '';
@@ -32,21 +40,11 @@ function getHotels (iso) {
 
 /* ---------- DATA MANIPULATION ---------- */
 
-let getAverageScore = function (hotels) {
-    return hotels.map(hotel => hotel.score)
-                 .reduce((aggregator, score) => aggregator + score) / hotels.length;
-}
-
-let getTop3 = function (hotels) {
-    return hotels.sort((a, b) => b.score - a.score).splice(0, 3)
-                 .map(hotel => hotel.name);
-}
-
     /*  recursive loop through Promise to automatically re-fetch hotels data in case of API failure  */
-function getHotelStats(iso) {
-    return getHotels(iso).then(function(resolve) {
+function getHotelStats(iso, header) {
+    return getHotels(iso, header).then(function(resolve) {
         if (resolve === 'API Error') {
-            return getHotelStats(iso);
+            return getHotelStats(iso, header);
         } else {
             if (resolve === 'ISO Error') {
                 return resolve;
@@ -55,12 +53,21 @@ function getHotelStats(iso) {
                     average: getAverageScore(JSON.parse(resolve)),
                     top3: getTop3(JSON.parse(resolve))
                 }
-                console.log(stats.average);
-                console.log(stats.top3);
+                console.log(` ---> Stats sent ('${iso}')`)
                 return stats;
             }
         }
     });
+}
+
+let getAverageScore = function (hotels) {
+    return hotels.map(hotel => hotel.score)
+                 .reduce((aggregator, score) => aggregator + score) / hotels.length;
+}
+
+let getTop3 = function (hotels) {
+    return hotels.sort((a, b) => b.score - a.score).splice(0, 3)
+                 .map(hotel => hotel.name);
 }
 
 
@@ -73,9 +80,22 @@ const app = express();
 app.use(cors())
 
 app.get('/stats', async (req, res) => {
-    let stats = await getHotelStats(req.query.iso);
-    if (stats === 'ISO Error') res.send('No hotels exist for selected ISO');
-    else res.send(stats);
+    const mail = req.header('x-mail');
+    const hashedMail = require('crypto').createHash('sha1').update(mail).digest('hex');
+    if (mail == null) {
+        res.statusCode = 401;
+        res.send('X-Mail header not provided');
+    } else {
+        let stats = await getHotelStats(req.query.iso, hashedMail);
+        if (stats === 'ISO Error') {
+            res.statusCode = 404;
+            res.send('No hotels exist for selected ISO');
+        }
+        else {
+            res.statusCode = 200;
+            res.send(stats);
+        };
+    }
 });
 
 app.listen(2323, () => {
