@@ -9,6 +9,9 @@ html, body {
 body {
     min-height: 100vh;
 }
+body.loading {
+    cursor: progress;
+}
 .wraper {
     display: flex;
     flex-wrap: wrap;
@@ -100,6 +103,9 @@ main .wraper {
     color: white;
     font-size: 20px;
     transform: scale(1.02);
+    pointer-events: none;
+}
+.buttons button.loading {
     pointer-events: none;
 }
 .buttons button:hover {

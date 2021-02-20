@@ -69,7 +69,7 @@ async function fetchAllStats() {
 
     /*  fetch all stats on page load and assign click handlers to switch between countries  */
 fetchAllStats().then(stats => {
-    buttons.forEach(button => {
+    buttons.forEach(button => {        
         button.addEventListener('click', function(event) {
             if (!document.querySelector('.display').classList.contains('slim')) {
                 displayStatsByIso(stats, event.target.dataset.iso)
@@ -79,7 +79,12 @@ fetchAllStats().then(stats => {
                 }, 500);
             }
         });
+
+        /* allow button interaction only after fetch is completed to avoid displaying empty data */
+        button.classList.remove('loading');
     });
+
+    document.body.classList.remove('loading');
 });
 
     /*  print fetched stats on html  */
